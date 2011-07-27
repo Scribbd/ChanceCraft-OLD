@@ -1,0 +1,76 @@
+ChanceCraft
+Version: v0.1
+ 
+
+
+Adding chances to crafting.
+
+Features: 
+Adds chances to crafting
+Customize the chances for multiple jobs
+Dependencies
+
+Jobs (not required)
+BukkitContrib (has auto-downloader)
+Download/Installation Instructions
+
+
+Installing is simple download the following zip: <see attachment>
+
+Extract it into (jar AND folder with config.yml): %appdata%\Roaming\.craftbukkit\plugins\
+
+Settings:
+Code:
+General:
+    DebugPrint: true/false
+    CommandPrint: true/false
+    DetailPlayerPrint: true/false
+    ReturnOnFail: true/false
+    FailToss: true/false
+DebugPrint: Does nothing more than to print what it has read from the yml reader, ideal for setting up the items.
+CommandPrint: When true it will print all the craft events where ChanceCraft is used with.
+DetailPlayerPrint: The player will always be notified if he has failed or not, but with detailPrint enabled you also let the player know what his 'dice-roll' was and his chance to succeed.
+ReturnOnFail: BROKEN, although broken this will toggle if resources are lost on a failed attempt.
+FailToss: if Failed the remaining resources are tossed outside the crafting area on the ground for anyone to pick-up.
+
+Customization:
+Customize is a bit more of an hassle.
+For all the items that will receive the special treatment must be inserted in the config.yml
+You can use this template to add items and professions.
+Code:
+    i<itemID>:
+        NormalChance: <0-100>
+        ProfessionExclusive: <true/false>
+        Professions:
+            <professionName>:
+                ProfessionChance0: 0-100
+                ProfessionChancemin: 0-100
+                MaxProfChance: 0-100
+                MinProflvl: 0-maxLvl
+                MaxProflvl: 0-maxLvl
+ItemID: The ID used by your serverconfig for a item or block. ALWAYS PLACE 1 LETTER BEFORE EACH ITEMID, this is a bug I just can't get rid off.
+ProffesionExclusive: isn't working yet. ChanceCraft will be gentler to those not inside the profession an let the Player keep its resources.
+ProfessionName: the Exact name used in Jobs. This is case-sensitive.
+ProfessionChance0: the chance at lvl 0 of a profession until the MinProfLvl is reached
+ProfessionChancemin: the chance when MinProflvl is reached
+MaxProfessionChance: the chance when MaxProflvl is either surpassed or reached.
+MinProflvl: the lvl from which the chance will linearly increase from ProfessionChancemin to MaxProfessionChance.
+MaxProflvl: the lvl where the chance will stop increasing and will remain MaxProfessionChance.
+
+Note: Names will chance, I see now how random my names are.
+
+Current problems:
+fail-with-resource-loss isn't working properly. When an item is crafted with resources still in the crafting area. The item that was crafted, but deleted by the plugin isn't completely deleted. If you would click an inventory item it will recognize it as a legit swap and still place the item in the inventory. Closing the inventory will also drop the presumable deleted item.
+the .yml reader's .getKeys() command gives a list of Strings (List<String>). Yet when I try to go though the list with either a for-each or a while(hasnext()) loop when a number-only-key is used, then craftbukkit will nag that the String that was given through the .getKeys() command have turned it into Integers with all the "Cannot dereference/parse/etc"-errors as result.
+Plans:
+
+Very short term: getting the fail-with-resource-loss working.
+Short term: resource dependent chances/adding OP loop-hole
+Medium term: adding Block/getting to the bottom of the number-only Integer in List<String> problem.
+
+Source
+Link with code will come soon.
+
+Changelog:
+Version 0.1
+Initial Release
