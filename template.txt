@@ -1,0 +1,10 @@
+    <ItemID>:
+        NormalChance: <0-100>
+        ProfessionExclusive: <true/false>
+        Professions:
+        <professionName>:
+            ProfessionChance0: <0-100>
+            ProfessionChancemin: <0-100>
+            MaxProfChance: <0-100>
+            MinProflvl: <0-100>
+            MaxProflvl: <0-100>
