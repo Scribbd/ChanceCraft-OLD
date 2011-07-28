@@ -1,8 +1,13 @@
+/**
+ * ChanceCraft is made 
+ */
 package me.scriblon.plugins.chancecraft;
 
 import java.io.File;
 import java.util.logging.Logger;
 import me.scriblon.plugins.chancecraft.container.ChanceConfig;
+import me.scriblon.plugins.chancecraft.container.ListenerLink;
+import me.scriblon.plugins.chancecraft.listeners.ChanceClickListener;
 import me.scriblon.plugins.chancecraft.listeners.ChanceCraftListener;
 import me.scriblon.plugins.chancecraft.readers.ChanceConfigReader;
 import me.scriblon.plugins.chancecraft.util.Downloader;
@@ -11,12 +16,12 @@ import org.bukkit.event.Event.Type;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.config.Configuration;
-import org.bukkitcontrib.event.inventory.InventoryListener;
 
 public class Chancecraft extends JavaPlugin {
     
     private boolean jobsAvailable;
-    private InventoryListener listener;
+    private org.bukkitcontrib.event.inventory.InventoryListener cListener;
+    private org.bukkit.event.inventory.InventoryListener dListener;
     
     public void onDisable() {
         // TODO: Place any custom disable code here.
@@ -56,9 +61,12 @@ public class Chancecraft extends JavaPlugin {
         }
 
         //Setup listener.
-        listener = new ChanceCraftListener(jobsAvailable, chanceConfig, pm);
+        ListenerLink link = new ListenerLink();
+        cListener = new ChanceCraftListener(jobsAvailable, chanceConfig, pm, link);
+        dListener = new ChanceClickListener(chanceConfig, link);
         //The high setup is chosen because this should be done as the final thing
-        pm.registerEvent(Type.CUSTOM_EVENT, listener, Priority.High, this);
+        pm.registerEvent(Type.CUSTOM_EVENT, cListener, Priority.High, this);
+        pm.registerEvent(Type.INVENTORY_CLICK, dListener, Priority.Low, this);
         System.out.println(this + " is now enabled!");
     }
     

@@ -13,11 +13,14 @@ import java.util.List;
 import java.util.Random;
 import me.scriblon.plugins.chancecraft.container.ItemChance;
 import me.scriblon.plugins.chancecraft.container.ChanceConfig;
+import me.scriblon.plugins.chancecraft.container.ListenerLink;
 import me.scriblon.plugins.chancecraft.container.ProfessionConfig;
 import me.scriblon.plugins.chancecraft.debug.CraftInventoryDebug;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.PluginManager;
+import org.bukkitcontrib.event.inventory.InventoryClickEvent;
+import org.bukkitcontrib.event.inventory.InventoryCloseEvent;
 import org.bukkitcontrib.event.inventory.InventoryCraftEvent;
 import org.bukkitcontrib.event.inventory.InventoryListener;
 import org.bukkitcontrib.inventory.CraftingInventory;
@@ -31,11 +34,13 @@ public class ChanceCraftListener extends InventoryListener {
     private boolean withJobs;
     private ChanceConfig config;
     private PluginManager pm;
+    private ListenerLink link;
 
-    public ChanceCraftListener(boolean theJobs, ChanceConfig configuration, PluginManager thePM) {
+    public ChanceCraftListener(boolean theJobs, ChanceConfig configuration, PluginManager thePM, ListenerLink linker) {
         withJobs = theJobs;
         config = configuration;
         pm = thePM;
+        link = linker;
     }
 
     @Override
@@ -104,9 +109,42 @@ public class ChanceCraftListener extends InventoryListener {
         }
         //When in 'hardcore' mode items in stack are affected.
         craft.setMatrix(mutateRecipe(recipe));
+        player.updateInventory();
         event.setCursor(null);
+        player.updateInventory();
         CraftInventoryDebug.printInfo(craft);
+        link.setRecentFailure(true);
     }
+    
+    /**
+     * Workaround method for having
+     * @param event 
+     */
+    @Override
+    public void onInventoryClick(InventoryClickEvent event) {
+        super.onInventoryClick(event);
+        if(!event.isCancelled() || !link.isRecentFailure())
+            return;
+        if(event.getCursor() == null)
+            return;
+        System.out.println("Cursor wasn't empty after all");
+        event.setCursor(null);
+        link.setRecentFailure(false);
+        event.getPlayer().updateInventory();
+               
+    }
+
+    @Override
+    public void onInventoryClose(InventoryCloseEvent event) {
+        super.onInventoryClose(event);
+        if(!event.isCancelled() || !link.isRecentFailure())
+            return;
+        link.setRecentFailure(false);
+        System.out.println("Recent close event");
+        event.getPlayer().updateInventory();
+    }
+    
+    
 
     private boolean success(int roll, int min) {
         return 100 - min <= roll;
